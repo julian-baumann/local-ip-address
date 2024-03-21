@@ -136,27 +136,19 @@ pub fn local_ip() -> Result<IpAddr, Error> {
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
-        ifas.iter().clone().into_iter()
-            .find_map(|ifa| {
-                println!("Found {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv4(), ifa.iname);
+        for ifa in ifas.clone() {
+            if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
+                return Ok(ifa.addr);
+            }
+        }
 
-                return if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
-                    Some(ifa.addr)
-                } else {
-                    None
-                }
-            });
+        for ifa in ifas {
+            if !ifa.is_loopback && ifa.addr.is_ipv4(){
+                return Ok(ifa.addr);
+            }
+        }
 
-        ifas.into_iter()
-            .find_map(|ifa| {
-                println!("Found {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv4(), ifa.iname);
-
-                return if !ifa.is_loopback && ifa.addr.is_ipv4() {
-                    Some(ifa.addr)
-                } else {
-                    None
-                }
-            });
+        return Err(Error::LocalIpAddressNotFound);
 
         return Err(Error::LocalIpAddressNotFound);
     }
@@ -236,25 +228,17 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
-        ifas.iter().clone().into_iter()
-            .find_map(|ifa| {
-                println!("Found IPv6 {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv6(), ifa.iname);
-                return if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
-                    Some(ifa.addr)
-                } else {
-                    None
-                }
-            });
+        for ifa in ifas.clone() {
+            if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
+                return Ok(ifa.addr);
+            }
+        }
 
-        ifas.into_iter()
-            .find_map(|ifa| {
-                println!("Found IPv6 {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv4(), ifa.iname);
-                return if !ifa.is_loopback && ifa.addr.is_ipv6() {
-                    Some(ifa.addr)
-                } else {
-                    None
-                }
-            });
+        for ifa in ifas {
+            if !ifa.is_loopback && ifa.addr.is_ipv6(){
+                return Ok(ifa.addr);
+            }
+        }
 
         return Err(Error::LocalIpAddressNotFound);
     }
