@@ -134,7 +134,7 @@ pub fn local_ip() -> Result<IpAddr, Error> {
 
     #[cfg(target_os = "ios")]
     {
-        let ifas = crate::unix::list_afinet_netifas_info()?;
+        let ifas = crate::unix::list_afinet_netifas_info()?.iter();
 
         for ifa in ifas.clone() {
             if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
@@ -226,7 +226,7 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
 
     #[cfg(target_os = "ios")]
     {
-        let ifas = crate::unix::list_afinet_netifas_info()?;
+        let ifas = crate::unix::list_afinet_netifas_info()?.iter();
 
         for ifa in ifas.clone() {
             if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
