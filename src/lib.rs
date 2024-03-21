@@ -138,7 +138,7 @@ pub fn local_ip() -> Result<IpAddr, Error> {
 
         ifas.iter().clone().into_iter()
             .find_map(|ifa| {
-                println!("Found {0:?}, {1:?}", ifa.addr.is_ipv4(), ifa.iname);
+                println!("Found {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv4(), ifa.iname);
 
                 return if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
                     Some(ifa.addr)
@@ -149,7 +149,7 @@ pub fn local_ip() -> Result<IpAddr, Error> {
 
         ifas.into_iter()
             .find_map(|ifa| {
-                println!("Found {0:?}, {1:?}", ifa.addr.is_ipv4(), ifa.iname);
+                println!("Found {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv4(), ifa.iname);
 
                 return if !ifa.is_loopback && ifa.addr.is_ipv4() {
                     Some(ifa.addr)
@@ -238,6 +238,7 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
 
         ifas.iter().clone().into_iter()
             .find_map(|ifa| {
+                println!("Found IPv6 {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv6(), ifa.iname);
                 return if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
                     Some(ifa.addr)
                 } else {
@@ -247,6 +248,7 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
 
         ifas.into_iter()
             .find_map(|ifa| {
+                println!("Found IPv6 {:?}, {:?}, {:?}", ifa.addr, ifa.addr.is_ipv4(), ifa.iname);
                 return if !ifa.is_loopback && ifa.addr.is_ipv6() {
                     Some(ifa.addr)
                 } else {
