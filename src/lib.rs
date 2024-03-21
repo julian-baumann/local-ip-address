@@ -138,15 +138,25 @@ pub fn local_ip() -> Result<IpAddr, Error> {
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
-        ifas.into_iter()
+        ifas.iter().clone().into_iter()
             .find_map(|ifa| {
-                if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
+                return if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
                     Some(ifa.addr)
                 } else {
                     None
                 }
-            })
-            .ok_or(Error::LocalIpAddressNotFound)
+            });
+
+        ifas.into_iter()
+            .find_map(|ifa| {
+                return if !ifa.is_loopback && ifa.addr.is_ipv4() {
+                    Some(ifa.addr)
+                } else {
+                    None
+                }
+            });
+
+        return Err(Error::LocalIpAddressNotFound);
     }
 
     #[cfg(target_os = "windows")]
@@ -226,15 +236,25 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
-        ifas.into_iter()
+        ifas.iter().clone().into_iter()
             .find_map(|ifa| {
-                if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
+                return if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
                     Some(ifa.addr)
                 } else {
                     None
                 }
-            })
-            .ok_or(Error::LocalIpAddressNotFound)
+            });
+
+        ifas.into_iter()
+            .find_map(|ifa| {
+                return if !ifa.is_loopback && ifa.addr.is_ipv6() {
+                    Some(ifa.addr)
+                } else {
+                    None
+                }
+            });
+
+        return Err(Error::LocalIpAddressNotFound);
     }
 
     #[cfg(target_os = "windows")]
