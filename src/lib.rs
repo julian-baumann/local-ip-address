@@ -104,6 +104,29 @@ pub use crate::windows::*;
 ///
 /// For Windows systems Win32's IP Helper is used to gather the Local IP
 /// address
+
+#[cfg(target_os = "ios")]
+fn get_ip_from_interface(ifas: &Vec<AfInetInfo>, interface_name: &str) -> Option<IpAddr> {
+    for ifa in ifas {
+        if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == interface_name {
+            return Some(ifa.addr);
+        }
+    }
+
+    return None;
+}
+
+#[cfg(target_os = "ios")]
+fn get_ipv6_from_interface(ifas: &Vec<AfInetInfo>, interface_name: &str) -> Option<IpAddr> {
+    for ifa in ifas {
+        if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == interface_name {
+            return Some(ifa.addr);
+        }
+    }
+
+    return None;
+}
+
 pub fn local_ip() -> Result<IpAddr, Error> {
     #[cfg(target_os = "linux")]
     {
@@ -136,17 +159,9 @@ pub fn local_ip() -> Result<IpAddr, Error> {
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
-        for ifa in &ifas {
-            println!("ip: {:?}, interface: {:?}", ifa.addr, ifa.iname);
-
-            if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
-                return Ok(ifa.addr);
-            }
-        }
-
-        for ifa in &ifas {
-            if !ifa.is_loopback && ifa.addr.is_ipv4(){
-                return Ok(ifa.addr);
+        for interface_name in ["en0", "bridge100"] {
+            if let Some(ip) = get_ip_from_interface(&ifas, interface_name) {
+                return Ok(ip)
             }
         }
 
@@ -228,15 +243,9 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
-        for ifa in &ifas {
-            if !ifa.is_loopback && ifa.addr.is_ipv6() && ifa.iname == "en0" {
-                return Ok(ifa.addr);
-            }
-        }
-
-        for ifa in &ifas {
-            if !ifa.is_loopback && ifa.addr.is_ipv6(){
-                return Ok(ifa.addr);
+        for interface_name in ["en0", "bridge100"] {
+            if let Some(ip) = get_ipv6_from_interface(&ifas, interface_name) {
+                return Ok(ip)
             }
         }
 
