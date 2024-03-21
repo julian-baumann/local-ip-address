@@ -137,6 +137,8 @@ pub fn local_ip() -> Result<IpAddr, Error> {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
         for ifa in &ifas {
+            println!("ip: {:?}, interface: {:?}", ifa.addr, ifa.iname);
+
             if !ifa.is_loopback && ifa.addr.is_ipv4() && ifa.iname == "en0" {
                 return Ok(ifa.addr);
             }
