@@ -132,9 +132,7 @@ pub fn local_ip() -> Result<IpAddr, Error> {
             .ok_or(Error::LocalIpAddressNotFound)
     }
 
-    #[cfg(any(
-        target_os = "ios"
-    ))]
+    #[cfg(target_os = "ios")]
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
@@ -230,9 +228,7 @@ pub fn local_ipv6() -> Result<IpAddr, Error> {
             .ok_or(Error::LocalIpAddressNotFound)
     }
 
-    #[cfg(any(
-        target_os = "ios"
-    ))]
+    #[cfg(target_os = "ios")]
     {
         let ifas = crate::unix::list_afinet_netifas_info()?;
 
